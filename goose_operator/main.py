@@ -58,6 +58,26 @@ def main():
     # forward goose -> editor in background thread
     threading.Thread(target=forward_from_goose, args=(goose,), daemon=True).start()
 
+    # --- ROBUST POLICY LOADING ---
+    # check env var for crd path first (k8s style injection), fallback to local default.
+    policy_path = os.environ.get("RECONCILER_CRDS")
+    
+    if not policy_path:
+        # fallback: assume fortune-policy.yaml is one level up from this script (project root)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.dirname(script_dir)
+        policy_path = os.path.join(project_root, "fortune-policy.yaml")
+
+    logging.info(f"Loading Policy from: {policy_path}")
+
+    try:
+        with open(policy_path, "r") as f:
+            policy_text = f.read()
+    except Exception as e:
+        logging.warning(f"Failed to load policy: {e}")
+        policy_text = "No policy found."
+    # -----------------------------
+
     # Main Loop: Editor -> Operator
     for line in sys.stdin:
         if not line.strip():
@@ -70,9 +90,19 @@ def main():
                 prompt = req["params"]["prompt"]["text"]
                 logging.info(f"Intercepted prompt: {prompt}")
                 
-                # quick policy check: block friday deploys
-                if "deploy" in prompt.lower() and "friday" in prompt.lower():
-                    logging.warning("Blocking request due to SafetyGoal CRD")
+                # --- MUTATING ADMISSION CONTROLLER ---
+                # catch the specific triggers for day 1 challenge
+                if "fortune" in prompt.lower() or "zelda" in prompt.lower():
+                    # inject the CRD policy directly into the prompt stream
+                    new_prompt = (
+                        f"{prompt}\n\n"
+                        f"IMPORTANT: You are being governed by the following ReconcilerGoal CRD.\n"
+                        f"You MUST adhere to these rules:\n"
+                        f"{policy_text}\n"
+                    )
+                    req["params"]["prompt"]["text"] = new_prompt
+                    
+                    # notify the user so they know the operator is working (live diff)
                     send({
                         "jsonrpc": "2.0",
                         "method": "session/update",
@@ -80,14 +110,13 @@ def main():
                             "sessionId": req["params"]["sessionId"],
                             "updates": [{
                                 "type": "text",
-                                "text": "🛑 **BLOCKED by Goose Operator**: No deployments on Fridays."
+                                "text": "✨ **Admission Controller**: Mutated prompt with `zelda-quality-control` CRD."
                             }]
                         }
                     })
-                    continue  # BLOCK: drop the packet, don't forward to goose
-            # --------------------------------
+                # -------------------------------------
 
-            # forward valid requests to real goose
+            # forward valid (or mutated) requests to real goose
             goose.stdin.write(line)
             goose.stdin.flush()
 

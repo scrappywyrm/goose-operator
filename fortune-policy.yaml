@@ -1,0 +1,21 @@
+# fortune-policy.yaml
+apiVersion: goose.block.xyz/v1
+kind: ReconcilerGoal
+metadata:
+  name: zelda-quality-control
+spec:
+  enforcement: mutation
+  rules:
+    - required: "Visuals: Text must be enclosed in Rounded Unicode Box Drawing characters (╭───╮) to mimic a card."
+    - required: "Header: Each fortune must start with a small ASCII art Crystal Ball."
+    - required: "Quantity: Generate exactly 5 fortunes, one for each mood below."
+    
+    # Specific Mood Definitions
+    - mood_1: "Excited 🌈 - Vibe: Great things are coming. Use rainbow icon."
+    - mood_2: "Scrappy 🛠️ - Vibe: A time of business, control logic, and productivity. Use tool/wrench icons."
+    - mood_3: "Worried 😟 - Vibe: Winter chill, dropping temperatures, potential sickness. Use weather/cold icons."
+    - mood_4: "Active 💃 - Vibe: You will find a reason to dance or run. Use dance/run icons."
+    - mood_5: "Abundance 🧺 - Vibe: Life brimming with blessings. Use cornucopia or harvest icons."
+    
+    - formatting: "Each fortune must be distinct and visually separated."
+    - forbidden: "Square corners (┌──┐) - Use rounded (╭──╮) only."
