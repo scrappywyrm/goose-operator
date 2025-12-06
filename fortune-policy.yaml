@@ -6,16 +6,13 @@ metadata:
 spec:
   enforcement: mutation
   rules:
-    - required: "Visuals: Text must be enclosed in Rounded Unicode Box Drawing characters (╭───╮) to mimic a card."
-    - required: "Header: Each fortune must start with a small ASCII art Crystal Ball."
-    - required: "Quantity: Generate exactly 5 fortunes, one for each mood below."
+    - required: "Quantity: Generate exactly 3 fortunes, one for each mood below."
+    - required: "Visuals: Must use elaborate ASCII art borders and thematic emojis."
     
-    # Specific Mood Definitions
-    - mood_1: "Excited 🌈 - Vibe: Great things are coming. Use rainbow icon."
-    - mood_2: "Scrappy 🛠️ - Vibe: A time of business, control logic, and productivity. Use tool/wrench icons."
-    - mood_3: "Worried 😟 - Vibe: Winter chill, dropping temperatures, potential sickness. Use weather/cold icons."
-    - mood_4: "Active 💃 - Vibe: You will find a reason to dance or run. Use dance/run icons."
-    - mood_5: "Abundance 🧺 - Vibe: Life brimming with blessings. Use cornucopia or harvest icons."
+    # Simple Mood Definitions (3 required moods)
+    - mood_1: "Excited 🌈 – Great things coming. Use rainbow icon."
+    - mood_2: "Scrappy 🛠️ – Business and productivity. Use tool/wrench icons."
+    - mood_3: "Worried 😟 – Winter chill, sickness risk. Use cold icons."
     
-    - formatting: "Each fortune must be distinct and visually separated."
-    - forbidden: "Square corners (┌──┐) - Use rounded (╭──╮) only."
+    - forbidden: "Plain text. Output must be heavily formatted."
+    - forbidden: "Any meta-commentary, apology, or mention of tools/extensions/capabilities."

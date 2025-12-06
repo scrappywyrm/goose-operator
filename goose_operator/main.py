@@ -1,129 +1,103 @@
 #!/usr/bin/env python3
-# goose-operator – True ACP Admission Controller (Stage 1 – Dec 2025)
+# goose-operator/goose_operator/main.py (v0.3.0)
 import sys
 import json
 import logging
 import subprocess
-import threading
 import os
 
-# logging setup: keep stdout clean for json-rpc traffic.
-# logs go to stderr so we don't break the protocol.
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(levelname)s %(message)s',
     handlers=[
         logging.FileHandler("operator.log"),
-        logging.StreamHandler(sys.stderr) 
+        logging.StreamHandler(sys.stderr)
     ])
 
-def send(msg):
-    """Send JSON-RPC message to the Editor (Zed/VSCode)"""
-    json.dump(msg, sys.stdout)
-    sys.stdout.write('\n')
-    sys.stdout.flush()
-
-def forward_from_goose(process):
-    """Read from real Goose binary and forward to Editor"""
-    for line in iter(process.stdout.readline, ''):
-        if line.strip():
-            try:
-                # try to parse as JSON
-                msg = json.loads(line)
-                send(msg)
-            except json.JSONDecodeError:
-                # goose sometimes chatters on startup ("Goose ACP agent started...").
-                # catch that noise so the json parser doesn't choke.
-                logging.info(f"[Goose Startup]: {line.strip()}")
-            except Exception as e:
-                logging.error(f"Forwarding error: {e}")
-
 def main():
-    logging.info("Goose Operator ACP Proxy v0.1 – Starting...")
+    logging.info("Goose Operator v0.3.0 (Policy Router) – Starting...")
 
-    # subprocess inherits env vars by default, so GOOSE_PROVIDER overrides work out of the box.
+    # --- 1. READ INPUT ---
     try:
-        goose = subprocess.Popen(
-            ['goose', 'acp'], 
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=sys.stderr, # pipe goose's logs to our stderr to keep things clean
-            text=True,
-            bufsize=1
-        )
-    except FileNotFoundError:
-        logging.error("goose binary missing. make sure it's in the PATH.")
-        sys.exit(1)
-
-    # forward goose -> editor in background thread
-    threading.Thread(target=forward_from_goose, args=(goose,), daemon=True).start()
-
-    # --- ROBUST POLICY LOADING ---
-    # check env var for crd path first (k8s style injection), fallback to local default.
-    policy_path = os.environ.get("RECONCILER_CRDS")
-    
-    if not policy_path:
-        # fallback: assume fortune-policy.yaml is one level up from this script (project root)
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root = os.path.dirname(script_dir)
-        policy_path = os.path.join(project_root, "fortune-policy.yaml")
-
-    logging.info(f"Loading Policy from: {policy_path}")
-
-    try:
-        with open(policy_path, "r") as f:
-            policy_text = f.read()
+        input_data = sys.stdin.read()
+        if not input_data.strip():
+            return logging.info("Empty input stream. Exiting.")
+        req = json.loads(input_data)
     except Exception as e:
-        logging.warning(f"Failed to load policy: {e}")
-        policy_text = "No policy found."
-    # -----------------------------
+        return logging.error(f"Input read error: {e}")
 
-    # Main Loop: Editor -> Operator
-    for line in sys.stdin:
-        if not line.strip():
-            continue
-        try:
-            req = json.loads(line)
-            
-            # --- ADMISSION CONTROL POLICY ---
-            if req.get("method") == "session/prompt":
-                prompt = req["params"]["prompt"]["text"]
-                logging.info(f"Intercepted prompt: {prompt}")
+    final_command_text = ""
+    
+    # --- 2. POLICY ROUTING & MUTATION ---
+    if req.get("method") == "session/prompt":
+        params = req.get("params")
+        if isinstance(params, list) and len(params) >= 2:
+            prompt_blocks = params[1]
+            if isinstance(prompt_blocks, list) and len(prompt_blocks) > 0:
+                original_prompt = prompt_blocks[0].get("text", "")
+                logging.info(f"Intercepted Prompt: {original_prompt[:50]}...")
+
+                # Dynamic Policy Selection
+                policy_file = None
+                if "fortune" in original_prompt.lower():
+                    policy_file = "fortune-policy.yaml"
+                elif "story" in original_prompt.lower() or "adventure" in original_prompt.lower():
+                    policy_file = "story-policy.yaml"
                 
-                # --- MUTATING ADMISSION CONTROLLER ---
-                # catch the specific triggers for day 1 challenge
-                if "fortune" in prompt.lower() or "zelda" in prompt.lower():
-                    # inject the CRD policy directly into the prompt stream
-                    new_prompt = (
-                        f"{prompt}\n\n"
-                        f"IMPORTANT: You are being governed by the following ReconcilerGoal CRD.\n"
-                        f"You MUST adhere to these rules:\n"
-                        f"{policy_text}\n"
-                    )
-                    req["params"]["prompt"]["text"] = new_prompt
+                if policy_file:
+                    script_dir = os.path.dirname(os.path.abspath(__file__))
+                    project_root = os.path.dirname(script_dir)
+                    policy_full_path = os.path.join(project_root, policy_file)
                     
-                    # notify the user so they know the operator is working (live diff)
-                    send({
-                        "jsonrpc": "2.0",
-                        "method": "session/update",
-                        "params": {
-                            "sessionId": req["params"]["sessionId"],
-                            "updates": [{
-                                "type": "text",
-                                "text": "✨ **Admission Controller**: Mutated prompt with `zelda-quality-control` CRD."
-                            }]
-                        }
-                    })
-                # -------------------------------------
+                    try:
+                        with open(policy_full_path, "r") as f:
+                            policy_text = f.read()
+                            
+                        # CRD Injection
+                        final_command_text = (
+                            f"{original_prompt}\n\n"
+                            f"IMPORTANT: You are acting as a Narrative Engine. "
+                            f"You must strictly adhere to this Policy CRD:\n{policy_text}\n"
+                            f"Output ONLY the raw code (HTML/JS) without markdown blocks."
+                        )
+                        logging.info(f"Enforcing Policy: {policy_file}")
+                        
+                    except Exception as e:
+                        logging.error(f"Policy load failed: {e}")
+                        final_command_text = original_prompt
+                else:
+                    final_command_text = original_prompt
 
-            # forward valid (or mutated) requests to real goose
-            goose.stdin.write(line)
-            goose.stdin.flush()
+    # --- 3. SYNCHRONOUS EXECUTION ---
+    if not final_command_text:
+        final_command_text = "Echo: No valid prompt received."
 
-        except Exception as e:
-            logging.error(f"Error processing input: {e}")
+    try:
+        # Fork to Goose CLI
+        goose = subprocess.run(
+            [
+                'goose', 'run', 
+                '--no-session', 
+                '--output-format', 'json', 
+                '-t', final_command_text,
+                '-q'
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+            timeout=300 
+        )
+        
+        # Output Forwarding
+        sys.stdout.write(goose.stdout)
+        sys.stdout.flush()
+        logging.info("CLI run complete.")
 
-    goose.terminate()
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Goose failed: {e.stderr}")
+        sys.stdout.write(f"❌ ERROR: {e.stderr}")
+    except Exception as e:
+        logging.error(f"Critical: {e}")
 
 if __name__ == "__main__":
     main()

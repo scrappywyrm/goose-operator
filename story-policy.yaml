@@ -1,0 +1,35 @@
+apiVersion: goose.block.xyz/v1
+kind: StoryGraph
+metadata:
+  name: winter-tale-structure
+spec:
+  enforcement: generation
+  requirements:
+    # --- APP IDENTITY & VISUALS ---
+    - constraint: "App Title must be exactly: 'Overheard Through Snowfall'."
+    - constraint: "Theme: Midnight Winter. Background: #0b1026. Text: #e6e6fa. Accents: #ffd700."
+    - constraint: "Visuals: Implement a CSS keyframe animation creating falling snowflakes (❄️) overlay."
+    - constraint: "Typography: Use Serif fonts for a storybook feel."
+    - forbidden: "External images. Use only CSS and Emojis."
+
+    # --- TECHNICAL ARCHITECTURE ---
+    - constraint: "Structure: Single Page Application (SPA) in one index.html file."
+    - constraint: "State: Use internal JavaScript to switch views (no page reloads)."
+
+    # --- NARRATIVE GRAPH (3-Step Flow) ---
+    - node_structure:
+      # Step 1: The Gateway
+      - Start: "The Frozen Gate".
+        - Description: User stands at the festival entrance.
+        - Choices: "Enter Forest", "Climb Mountain", "Visit Village".
+      
+      # Step 2: The Encounter (The Middle)
+      - Encounter A (Forest): "The Whispering Pines". Dilemma: "Follow the Wolf" vs "Return to Path".
+      - Encounter B (Mountain): "The Yeti's Cave". Dilemma: "Light a Fire" vs "Search Deeper".
+      - Encounter C (Village): "The Empty Tavern". Dilemma: "Read the Journal" vs "Wait for Owner".
+
+      # Step 3: The Resolution (The End)
+      - Endings: Provide a unique text conclusion for each choice made in Step 2.
+
+    # --- MECHANICS ---
+    - required: "Include a 'Restart Story' button only on the Resolution screens."
