@@ -1,0 +1,21 @@
+apiVersion: goose.block.xyz/v1
+kind: SiteDeployment
+metadata:
+  name: winter-festival-launch
+spec:
+  enforcement: generation
+  requirements:
+    # --- TARGET DEFINITION ---
+    - constraint: "Target Platform: Vercel CLI."
+    - constraint: "Source Directory: ../Day02"
+    
+    # --- PRE-DEPLOYMENT FIXES (The New Logic) ---
+    - required: "Check if 'operator_story.html' exists in the source."
+    - required: "If it exists, copy it to 'index.html' so the site loads automatically."
+    
+    # --- DEPLOYMENT COMMAND ---
+    - required: "Generate a shell script named 'deploy_site.sh'."
+    - required: "Use this exact command: 'vercel --prod --yes --name day04'" 
+    
+    # --- VALIDATION ---
+    - constraint: "Echo the final Vercel URL at the end."

@@ -43,6 +43,10 @@ def main():
                     policy_file = "fortune-policy.yaml"
                 elif "story" in original_prompt.lower() or "adventure" in original_prompt.lower():
                     policy_file = "story-policy.yaml"
+                elif "cocoa" in original_prompt.lower() or "chart" in original_prompt.lower() or "visualize" in original_prompt.lower():
+                    policy_file = "cocoa-policy.yaml"
+                elif "deploy" in original_prompt.lower() or "publish" in original_prompt.lower():
+                    policy_file = "deployment-policy.yaml"
                 
                 if policy_file:
                     script_dir = os.path.dirname(os.path.abspath(__file__))

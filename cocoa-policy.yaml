@@ -1,0 +1,23 @@
+apiVersion: goose.block.xyz/v1
+kind: DataSchema
+metadata:
+  name: cocoa-championship-integrity
+spec:
+  enforcement: generation
+  requirements:
+    - constraint: "Data Source: Extract values ONLY from the provided text. Do not invent numbers."
+    - constraint: "Integrity: Ensure the Final Score (678 vs 623) matches the text exactly."
+    - constraint: "Integrity: Extract exactly 16 entrants if mentioned, or all available named entities."
+
+    - constraint: "Chart 1 (Comparison): Use a Vertical Bar Chart for the Final Scores."
+    - constraint: "Chart 2 (Trend): Use a Pie Chart for the 'Voting Period' distribution (Morning/Afternoon/Evening)."
+    - constraint: "Chart 3 (Multi-Var): Use a Radar Chart for the Recipe Attributes (Richness/Sweetness/etc)."
+    
+    - constraint: "Palette: Use the Winter Festival Palette (#0b1026, #ffd700, #e6e6fa, #d62728)."
+    - constraint: "Layout: Minimalist. No 3D effects. No shadows. Gridlines must be light gray and horizontal only."
+    - constraint: "Typography: Title must be clear and descriptive (e.g., 'Final Championship Results')."
+
+    - required: "Generate a standalone Python script named 'generate_report.py'."
+    - required: "Use 'matplotlib' library."
+    - required: "Save charts as high-res PNG files: 'bar_results.png', 'pie_votes.png', 'radar_comparison.png'."
+    - forbidden: "Interactive plotting (plotly.show(), plt.show()). Code must be non-blocking and save to disk."
