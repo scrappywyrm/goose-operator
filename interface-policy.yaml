@@ -1,0 +1,21 @@
+apiVersion: goose.block.xyz/v1
+kind: InterfacePolicy
+metadata:
+  name: winter-hud-design
+spec:
+  enforcement: generation
+  requirements:
+    - constraint: "Output must be a Single File HTML (index.html)."
+    - constraint: "Use MediaPipe Hands (NOT GestureRecognizer) for robustness."
+    - constraint: "Use geometry/math to detect gestures from landmarks."
+    - constraint: "Must NOT require external API keys (use Mock Flight Data)."
+    - required: "Background must be Midnight Blue (#0b1026)."
+    - required: "Use CSS/SVG or Emojis to depict an Igloo and Reindeer (No external image links)."
+    - required: "Font family must be 'Courier New' or monospace."
+    - required: "DETECT: Index Finger Pointing OR Closed Fist -> SELECT Action."
+    - required: "DETECT: Open Hand moving Left/Right -> SCROLL Action."
+    - required: "DETECT: Pinch (Thumb+Index touching) -> DISMISS/CANCEL Action."
+    - required: "Show large text overlay: 'SCROLLING MODE' when hand is open/moving."
+    - required: "Show large text overlay: 'SELECTED: [FLIGHT]' when pointing/fist."
+    - required: "Show large text overlay: 'DISMISSED' when pinching."
+    - constraint: "Video feed must be mirrored."

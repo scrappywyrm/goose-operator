@@ -1,21 +1,25 @@
 #!/usr/bin/env python3
-# goose-operator/goose_operator/main.py (v0.3.0)
+# goose-operator/goose_operator/main.py (v0.3.1 - Robust Paths)
 import sys
 import json
 import logging
 import subprocess
 import os
 
+# Configure Logging to write to the script's directory (safer than CWD)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+log_file = os.path.join(script_dir, "..", "operator.log")
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s %(levelname)s %(message)s',
     handlers=[
-        logging.FileHandler("operator.log"),
+        logging.FileHandler(log_file),
         logging.StreamHandler(sys.stderr)
     ])
 
 def main():
-    logging.info("Goose Operator v0.3.0 (Policy Router) – Starting...")
+    logging.info("Goose Operator v0.3.1 (Policy Router) – Starting...")
 
     # --- 1. READ INPUT ---
     try:
@@ -47,10 +51,16 @@ def main():
                     policy_file = "cocoa-policy.yaml"
                 elif "deploy" in original_prompt.lower() or "publish" in original_prompt.lower():
                     policy_file = "deployment-policy.yaml"
+                elif "gesture" in original_prompt.lower() or "flight" in original_prompt.lower() or "hud" in original_prompt.lower():
+                    policy_file = "interface-policy.yaml"
                 
                 if policy_file:
-                    script_dir = os.path.dirname(os.path.abspath(__file__))
-                    project_root = os.path.dirname(script_dir)
+                    # --- ROBUST ABSOLUTE PATH LOGIC ---
+                    # 1. Get the directory where THIS script (main.py) lives
+                    current_script_dir = os.path.dirname(os.path.abspath(__file__))
+                    # 2. Go up one level to find the root of the operator repo
+                    project_root = os.path.dirname(current_script_dir)
+                    # 3. Construct the full path to the policy file
                     policy_full_path = os.path.join(project_root, policy_file)
                     
                     try:
@@ -64,8 +74,12 @@ def main():
                             f"You must strictly adhere to this Policy CRD:\n{policy_text}\n"
                             f"Output ONLY the raw code (HTML/JS) without markdown blocks."
                         )
-                        logging.info(f"Enforcing Policy: {policy_file}")
+                        logging.info(f"Enforcing Policy: {policy_file} (Found at {policy_full_path})")
                         
+                    except FileNotFoundError:
+                        logging.error(f"CRITICAL: Policy file not found at {policy_full_path}")
+                        # Fallback to original prompt if policy missing, but log error
+                        final_command_text = original_prompt
                     except Exception as e:
                         logging.error(f"Policy load failed: {e}")
                         final_command_text = original_prompt
