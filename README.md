@@ -1,3 +1,5 @@
+# README still under construction 
+
 # Goose Operator (Stage 1)
 
 **An ACP-native Admission Controller for Self-Healing Agentic AI.**
