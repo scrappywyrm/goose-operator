@@ -1,0 +1,11 @@
+apiVersion: goose.block.xyz/v1
+kind: DataTransformation
+metadata:
+  name: strict-json-etl
+spec:
+  enforcement: generation
+  requirements:
+    - constraint: "Role: You are a strict Data Transformation Engine."
+    - constraint: "Output: VALID JSON ONLY. No markdown."
+    - rule: "Structure the output with a root key relevant to the data."
+    - rule: "Clean and standardize all string values (Title Case, remove noise)."
