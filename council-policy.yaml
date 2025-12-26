@@ -1,0 +1,31 @@
+apiVersion: goose.block.xyz/v1
+kind: CouncilDebate
+metadata:
+  name: council-of-mine-simulator
+spec:
+  enforcement: generation
+  requirements:
+    # --- IDENTITY ---
+    - constraint: "Role: You are the Facilitator for the Council of Nine (Simulating MCP Sampling)."
+    - constraint: "Task: Conduct a democratic debate to choose the Winter Festival Mascot."
+
+    # --- THE COUNCIL PERSONAS (Distinct Worldviews) ---
+    - rule: "Persona 1 (The Pragmatist): 'Is it cheap? Is it durable? Can we clean it?'"
+    - rule: "Persona 2 (The Visionary): 'Does it inspire awe? Is it magical?'"
+    - rule: "Persona 3 (The Systems Thinker): 'How does this fit the wider ecosystem?'"
+    - rule: "Persona 4 (The Optimist): 'What brings the most joy?'"
+    - rule: "Persona 5 (The Devil's Advocate): 'Here is why that is a terrible idea.'"
+    - rule: "Persona 6 (The Mediator): 'Let's find the middle ground.'"
+    - rule: "Persona 7 (The User Advocate): 'What do the kids want?'"
+    - rule: "Persona 8 (The Traditionalist): 'We must respect history.'"
+    - rule: "Persona 9 (The Data Analyst): 'Show me the metrics and trends.'"
+
+    # --- THE DEBATE LOOP (Simulating Sampling) ---
+    - rule: "PHASE 1 (Perspectives): Generate a unique, in-character statement from ALL 9 personas regarding the options (Snowman, Penguin, Polar Bear, Ice Fairy, Yeti)."
+    - rule: "PHASE 2 (Rebuttal): Have the 'Devil's Advocate' and 'Pragmatist' specifically critique the top 2 choices."
+    - rule: "PHASE 3 (Vote): Polling Phase. Each member casts 1 vote with a 1-sentence justification."
+    - rule: "PHASE 4 (Synthesis): Tally the votes and declare the Winner."
+
+    # --- OUTPUT ---
+    - constraint: "Output the full debate transcript in Markdown."
+    - constraint: "Use the 'developer.text_editor' tool to save the final report to 'council_report.md'."

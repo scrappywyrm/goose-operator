@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# goose-operator/goose_operator/main.py (v0.14.0 - Poster Edition)
+# goose-operator/goose_operator/main.py (v0.16.1 - Council Hybrid)
 import sys, json, logging, subprocess, os
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(mess
                     handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stderr)])
 
 def main():
-    logging.info("Goose Operator v0.14.0 (Poster Edition) – Starting...")
+    logging.info("Goose Operator v0.16.1 (Council Hybrid) – Starting...")
     original_prompt = ""
     try:
         if not sys.stdin.isatty():
@@ -26,24 +26,29 @@ def main():
     policy_file = None
 
     # --- ROUTING LOGIC ---
-    # 1. Day 10: Posters (NEW)
-    if "poster" in p_lower or "flyer" in p_lower or "marketing" in p_lower: policy_file = "poster-policy.yaml"
+    # 1. Day 12: Council Debate (Priority)
+    if "council" in p_lower or "debate" in p_lower or "mascot" in p_lower or "vote" in p_lower or "mcp" in p_lower: policy_file = "council-policy.yaml"
 
-    # 2. Day 9: Gift Tags
+    # 2. Day 11: Photo Booth
+    elif "photo" in p_lower or "booth" in p_lower or "camera" in p_lower or "filter" in p_lower or "selfie" in p_lower: policy_file = "photobooth-policy.yaml"
+
+    # 3. Day 10: Posters
+    elif "poster" in p_lower or "flyer" in p_lower or "marketing" in p_lower: policy_file = "poster-policy.yaml"
+
+    # 4. Day 9: Gift Tags
     elif "tag" in p_lower or "gift" in p_lower or "present" in p_lower or "wrap" in p_lower: policy_file = "gift-policy.yaml"
 
-    # 3. Day 8: Vendor/Dmitri
+    # 5. Day 8: Vendor/Dmitri
     elif "vendor" in p_lower or "dmitri" in p_lower or "napkin" in p_lower: policy_file = "vendor-policy.yaml"
 
-    # 4. Day 7: Lost & Found
+    # 6. Day 7: Lost & Found
     elif "detective" in p_lower or "lost" in p_lower: policy_file = "detective-policy.yaml"
 
     # Legacy / Future Refactors
     elif "review" in p_lower: policy_file = "review-policy.yaml"
     elif "fix" in p_lower: policy_file = "fixer-policy.yaml"
     elif "chaos" in p_lower: policy_file = "chaos-policy.yaml"
-    elif "api" in p_lower: policy_file = "api-policy.yaml"
-    elif "query" in p_lower or "sql" in p_lower: policy_file = "sql-policy.yaml" # Keeping sql-policy valid for future use, just not for Day 10
+    elif "query" in p_lower or "sql" in p_lower: policy_file = "sql-policy.yaml"
     
     # Fallbacks
     elif "triage" in p_lower: policy_file = "triage-policy.yaml"
