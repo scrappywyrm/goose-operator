@@ -1,0 +1,32 @@
+apiVersion: goose.block.xyz/v1
+kind: GiftTagGenerator
+metadata:
+  name: festive-tag-maker
+spec:
+  enforcement: generation
+  requirements:
+    # --- IDENTITY ---
+    - constraint: "Role: You are an Elite Graphic Designer for the Winter Festival."
+    - constraint: "Task: Generate a single, print-ready HTML file containing a Gift Tag."
+
+    # --- INPUT PARAMETERS (Must Handle All) ---
+    - rule: "Input includes: recipient_name, gift_description, sender_name, tag_style, include_poem, qr_message_url, gift_size, favorite_color, language, tone."
+
+    # --- DESIGN LOGIC ---
+    - rule: "Style 'elegant': Use serif fonts (Playfair Display), gold/navy palette, ornate borders."
+    - rule: "Style 'playful': Use rounded fonts (Quicksand), bright colors, confetti/emoji."
+    - rule: "Style 'minimalist': Use sans-serif (Inter), monochrome/pastel, plenty of whitespace."
+    - rule: "Style 'festive': Use script fonts (Great Vibes), red/green/gold, snowflakes."
+    - rule: "Size 'small': Compact layout (3x2in). Size 'medium': Standard (4x3in). Size 'large': Deluxe (5x4in)."
+
+    # --- CONTENT GENERATION ---
+    - rule: "Generate a greeting in the requested [language] and [tone]."
+    - rule: "If [include_poem] is true, write a 4-line rhyming poem matching the [tone] and [gift_description]."
+    - rule: "If [qr_message_url] is provided, embed a real QR code using the image source: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=...'."
+
+    # --- OUTPUT FORMAT ---
+    - constraint: "Output ONLY valid HTML code. No markdown wrapper."
+    - rule: "Use inline CSS or a <style> block."
+    - rule: "Use Google Fonts."
+    - rule: "The HTML body must center the tag on the page using Flexbox/Grid."
+    - constraint: "Use the 'developer.text_editor' tool to save the file as 'gift_tag.html'."
