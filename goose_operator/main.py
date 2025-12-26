@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# goose-operator/goose_operator/main.py (v0.6.2 - Detective Split)
+# goose-operator/goose_operator/main.py (v0.7.0 - The Gatekeeper)
 import sys, json, logging, subprocess, os
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(mess
                     handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stderr)])
 
 def main():
-    logging.info("Goose Operator v0.6.2 (Detective Split) – Starting...")
+    logging.info("Goose Operator v0.7.0 (The Gatekeeper) – Starting...")
     original_prompt = ""
     try:
         if not sys.stdin.isatty():
@@ -28,11 +28,13 @@ def main():
     # --- ROUTING LOGIC ---
     if "triage" in p_lower or "issue" in p_lower or "github" in p_lower: policy_file = "triage-policy.yaml"
     elif "resume" in p_lower or "career" in p_lower: policy_file = "career-policy.yaml"
-    
-    # SPLIT: Detective vs Generic Data
     elif "detective" in p_lower or "lost" in p_lower: policy_file = "detective-policy.yaml"
     elif "clean" in p_lower or "json" in p_lower or "napkin" in p_lower: policy_file = "data-policy.yaml"
     
+    # NEW: Day 10 SQL Routing
+    elif "query" in p_lower or "sql" in p_lower or "database" in p_lower: policy_file = "sql-policy.yaml"
+
+    # Legacy policies
     elif "fortune" in p_lower: policy_file = "fortune-policy.yaml"
     elif "story" in p_lower: policy_file = "story-policy.yaml"
     elif "cocoa" in p_lower: policy_file = "cocoa-policy.yaml"
