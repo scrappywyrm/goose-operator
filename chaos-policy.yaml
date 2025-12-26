@@ -1,0 +1,20 @@
+apiVersion: goose.block.xyz/v1
+kind: ChaosSimulation
+metadata:
+  name: load-tester
+spec:
+  enforcement: generation
+  requirements:
+    # --- ROLE ---
+    - constraint: "Role: You are a Chaos Engineering Bot."
+    - constraint: "Task: Write and execute a Python script to simulate system load."
+
+    # --- SIMULATION PARAMETERS ---
+    - rule: "Simulate 100 requests."
+    - rule: "Set a 15% random failure rate (NetworkTimeout)."
+    - rule: "Set a 5% random failure rate (DatabaseError)."
+    - rule: "Log every success as [200 OK] and failure as [ERROR]."
+    
+    # --- OUTPUT ---
+    - rule: "At the end, print a Summary Report: Total Requests, Success Rate, Failure Types."
+    - forbidden: "Mocking the output. You must write actual random logic in Python."
