@@ -14,7 +14,9 @@ spec:
     - rule: "Analyze the Job Description for the top 5 required hard skills."
     - rule: "Rewrite the User's bullet points to explicitly demonstrate those 5 skills."
     
-    # --- OUTPUT FORMAT ---
+    # --- STRICT OUTPUT CONTROL (The Fix) ---
     - rule: "Output Format: Two distinct sections: 1. Tailored Resume (Markdown), 2. Cover Letter."
     - forbidden: "Hallucinating experience not in the profile."
-    - forbidden: "Generic buzzwords (e.g., 'hard worker') without proof."
+    - forbidden: "Conversational filler (e.g., 'Okay', 'Here is')."
+    - forbidden: "Outputting a Plan or TODO list. EXECUTE IMMEDIATELY."
+    - required: "Start the output immediately with the Resume Header (e.g., '# Bruce Gashirabake')."
