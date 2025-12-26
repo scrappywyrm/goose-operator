@@ -1,0 +1,21 @@
+apiVersion: goose.block.xyz/v1
+kind: APISpecification
+metadata:
+  name: openapi-generator
+spec:
+  enforcement: generation
+  requirements:
+    # --- ROLE ---
+    - constraint: "Role: You are a Senior API Architect."
+    - constraint: "Input: Feature description."
+    - constraint: "Output: VALID YAML ONLY. No markdown conversational text."
+
+    # --- STRUCTURE ---
+    - rule: "Must be a valid OpenAPI 3.0.0 document."
+    - rule: "Must include 'info', 'paths', and 'components/schemas' sections."
+    - rule: "All paths must have 'summary', 'operationId', and 'responses'."
+    - rule: "All schemas must have explicit 'type' and 'example' fields."
+    
+    # --- STANDARDS ---
+    - rule: "Use camelCase for property names."
+    - rule: "Enforce standard HTTP status codes (200, 400, 404, 500)."

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# goose-operator/goose_operator/main.py (v0.7.0 - The Gatekeeper)
+# goose-operator/goose_operator/main.py (v0.8.0 - The API Architect)
 import sys, json, logging, subprocess, os
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(mess
                     handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stderr)])
 
 def main():
-    logging.info("Goose Operator v0.7.0 (The Gatekeeper) – Starting...")
+    logging.info("Goose Operator v0.8.0 (The API Architect) – Starting...")
     original_prompt = ""
     try:
         if not sys.stdin.isatty():
@@ -30,9 +30,10 @@ def main():
     elif "resume" in p_lower or "career" in p_lower: policy_file = "career-policy.yaml"
     elif "detective" in p_lower or "lost" in p_lower: policy_file = "detective-policy.yaml"
     elif "clean" in p_lower or "json" in p_lower or "napkin" in p_lower: policy_file = "data-policy.yaml"
-    
-    # NEW: Day 10 SQL Routing
     elif "query" in p_lower or "sql" in p_lower or "database" in p_lower: policy_file = "sql-policy.yaml"
+    
+    # NEW: Day 11 API Routing
+    elif "api" in p_lower or "swagger" in p_lower or "spec" in p_lower or "openapi" in p_lower: policy_file = "api-policy.yaml"
 
     # Legacy policies
     elif "fortune" in p_lower: policy_file = "fortune-policy.yaml"
