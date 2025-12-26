@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# goose-operator/goose_operator/main.py (v0.9.0 - The Chaos Monkey)
+# goose-operator/goose_operator/main.py (v0.10.1 - Router Patch)
 import sys, json, logging, subprocess, os
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(mess
                     handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stderr)])
 
 def main():
-    logging.info("Goose Operator v0.9.0 (The Chaos Monkey) – Starting...")
+    logging.info("Goose Operator v0.10.1 (Router Patch) – Starting...")
     original_prompt = ""
     try:
         if not sys.stdin.isatty():
@@ -25,16 +25,27 @@ def main():
     p_lower = original_prompt.lower()
     policy_file = None
 
-    # --- ROUTING LOGIC ---
-    if "triage" in p_lower or "issue" in p_lower or "github" in p_lower: policy_file = "triage-policy.yaml"
+    # --- ROUTING LOGIC (Prioritized) ---
+    
+    # 1. Review/Lint (Check this FIRST so 'apiKey' in code doesn't trigger API mode)
+    if "review" in p_lower or "audit" in p_lower or "lint" in p_lower: policy_file = "review-policy.yaml"
+
+    # 2. API Architect (Removed generic 'api' keyword to prevent false positives)
+    elif "swagger" in p_lower or "spec" in p_lower or "openapi" in p_lower or "api spec" in p_lower: policy_file = "api-policy.yaml"
+
+    # 3. Chaos Monkey
+    elif "chaos" in p_lower or "load" in p_lower or "test" in p_lower or "simulation" in p_lower: policy_file = "chaos-policy.yaml"
+
+    # 4. SQL Gatekeeper
+    elif "query" in p_lower or "sql" in p_lower or "database" in p_lower: policy_file = "sql-policy.yaml"
+
+    # 5. Resume/Career
     elif "resume" in p_lower or "career" in p_lower: policy_file = "career-policy.yaml"
+
+    # 6. Data/Triage (Generic fallbacks)
+    elif "triage" in p_lower or "issue" in p_lower or "github" in p_lower: policy_file = "triage-policy.yaml"
     elif "detective" in p_lower or "lost" in p_lower: policy_file = "detective-policy.yaml"
     elif "clean" in p_lower or "json" in p_lower or "napkin" in p_lower: policy_file = "data-policy.yaml"
-    elif "query" in p_lower or "sql" in p_lower or "database" in p_lower: policy_file = "sql-policy.yaml"
-    elif "api" in p_lower or "swagger" in p_lower or "spec" in p_lower or "openapi" in p_lower: policy_file = "api-policy.yaml"
-    
-    # NEW: Day 12 Chaos Routing
-    elif "chaos" in p_lower or "load" in p_lower or "test" in p_lower or "simulation" in p_lower: policy_file = "chaos-policy.yaml"
 
     # Legacy policies
     elif "fortune" in p_lower: policy_file = "fortune-policy.yaml"
