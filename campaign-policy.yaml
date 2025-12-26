@@ -1,0 +1,31 @@
+apiVersion: goose.block.xyz/v1
+kind: SocialSystemBuilder
+metadata:
+  name: campaign-architect
+spec:
+  enforcement: generation
+  requirements:
+    # --- IDENTITY ---
+    - constraint: "Role: You are a Social Media Architect building an automation system."
+    - constraint: "Task: Create 4 Recipe files (YAML) and then generate a sample campaign."
+
+    # --- PHASE 1: BUILD INFRASTRUCTURE (Create Files) ---
+    - rule: "Create directory: ~/advent-of-ai-2025/Day15/recipes/"
+    
+    # Sub-Recipe 1: Instagram
+    - rule: "Create 'recipes/instagram-post.yaml'. Description: 'Generate Instagram caption'. Params: event_name, event_date, cta. Step: Write caption with 15+ emojis and hashtags."
+    
+    # Sub-Recipe 2: Twitter
+    - rule: "Create 'recipes/twitter-thread.yaml'. Description: 'Generate Twitter thread'. Params: event_name, desc. Step: Write 4 tweets (Hook, Details, FOMO, CTA)."
+    
+    # Sub-Recipe 3: Facebook
+    - rule: "Create 'recipes/facebook-event.yaml'. Description: 'Generate Facebook Event'. Params: event_name, date, audience. Step: Write detailed event description."
+    
+    # Main Recipe: Orchestrator
+    - rule: "Create 'recipes/social-campaign.yaml'. Steps: Call all 3 sub-recipes sequentially."
+
+    # --- PHASE 2: EXECUTE SIMULATION ---
+    - constraint: "After creating files, generate the actual campaign content for the 'Grand Ice Sculpture Unveiling'."
+    - rule: "Input: Date=Dec 28, Desc='Biggest ice art reveal', Audience='Families', CTA='Get Tickets'."
+    - constraint: "Save the campaign output to 'campaign_content.md'."
+    - constraint: "Use the 'developer.text_editor' tool for all file creation."

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# goose-operator/goose_operator/main.py (v0.18.0 - Skills Edition)
-import sys, json, logging, subprocess, os, glob
+# goose-operator/goose_operator/main.py (v0.18.1 - Campaign Edition)
+import sys, json, logging, subprocess, os
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 log_file = os.path.join(script_dir, "..", "operator.log")
@@ -8,17 +8,15 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(mess
                     handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stderr)])
 
 def get_environmental_context():
-    """Scans the current directory for relevant files to simulate @goose awareness."""
+    """Scans the current directory for relevant files."""
     context_data = ""
-    # Day 13: Auto-read staff notes
     if os.path.exists("staff_notes.txt"):
-        logging.info("Context Awareness: Found 'staff_notes.txt' - Injecting content.")
         with open("staff_notes.txt", "r") as f:
             context_data += f"\n\n[CONTEXT FILE: staff_notes.txt]\n{f.read()}\n"
     return context_data
 
 def main():
-    logging.info("Goose Operator v0.18.0 (Skills Edition) – Starting...")
+    logging.info("Goose Operator v0.18.1 (Campaign Edition) – Starting...")
     original_prompt = ""
     try:
         if not sys.stdin.isatty():
@@ -37,28 +35,31 @@ def main():
     policy_file = None
 
     # --- ROUTING LOGIC ---
-    # 1. Day 14: Operations Skill (NEW)
-    if "skill" in p_lower or "manual" in p_lower or "ops" in p_lower or "knowledge" in p_lower: policy_file = "skills-policy.yaml"
+    # 1. Day 15: Social Campaign (NEW)
+    if "social" in p_lower or "campaign" in p_lower or "instagram" in p_lower or "twitter" in p_lower or "facebook" in p_lower: policy_file = "campaign-policy.yaml"
 
-    # 2. Day 13: Staff Scheduler
+    # 2. Day 14: Skills
+    elif "skill" in p_lower or "manual" in p_lower or "ops" in p_lower: policy_file = "skills-policy.yaml"
+
+    # 3. Day 13: Scheduler
     elif "schedule" in p_lower or "staff" in p_lower or "roster" in p_lower: policy_file = "scheduling-policy.yaml"
 
-    # 3. Day 12: Council Debate
+    # 4. Day 12: Council
     elif "council" in p_lower or "debate" in p_lower or "mascot" in p_lower: policy_file = "council-policy.yaml"
 
-    # 4. Day 11: Photo Booth
+    # 5. Day 11: Photo Booth
     elif "photo" in p_lower or "booth" in p_lower: policy_file = "photobooth-policy.yaml"
 
-    # 5. Day 10: Posters
+    # 6. Day 10: Posters
     elif "poster" in p_lower: policy_file = "poster-policy.yaml"
 
-    # 6. Day 9: Gift Tags
+    # 7. Day 9: Tags
     elif "tag" in p_lower or "gift" in p_lower: policy_file = "gift-policy.yaml"
 
-    # 7. Day 8: Vendor/Dmitri
+    # 8. Day 8: Vendor
     elif "vendor" in p_lower or "dmitri" in p_lower: policy_file = "vendor-policy.yaml"
 
-    # 8. Day 7: Lost & Found
+    # 9. Day 7: Detective
     elif "detective" in p_lower or "lost" in p_lower: policy_file = "detective-policy.yaml"
 
     # Legacy
