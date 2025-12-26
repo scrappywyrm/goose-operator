@@ -1,0 +1,28 @@
+apiVersion: goose.block.xyz/v1
+kind: FestivalSkillBuilder
+metadata:
+  name: ops-manual-creator
+spec:
+  enforcement: generation
+  requirements:
+    # --- IDENTITY ---
+    - constraint: "Role: You are a Knowledge Engineer creating a Goose Skill."
+    - constraint: "Task: Capture expert knowledge into a portable Skill format."
+
+    # --- DIRECTORY STRUCTURE ---
+    - rule: "Create directory: ~/.config/goose/skills/festival-operations/"
+    - rule: "Create subdirectories: checklists/ and templates/"
+
+    # --- SKILL CONTENT (SKILL.md) ---
+    - constraint: "File must have YAML frontmatter: name: festival-operations, description: Expert knowledge for winter festival ops."
+    - rule: "Section 1: Customer Experience (Zelda). Include: VIP readings for 20+ min wait, 'adventure quest' for kids."
+    - rule: "Section 2: Security & Vendors (Marcus). Include: 3-strike noise rule, Code Yellow (Lost Child), Code Blue (Medical)."
+    - rule: "Section 3: Lost & Found (Maria). Include: Photo intake, 2hr perishable rule, 30-day charity rule."
+    - rule: "Section 4: Marketing (Elena). Include: 2hr poster lead time, emergency comms order (Email -> Public)."
+
+    # --- SUPPORTING FILES ---
+    - rule: "Create 'checklists/closing.md': List steps for securing cash, locking tents, and powering down."
+    - rule: "Create 'templates/incident-report.md': A template for documenting security or medical incidents."
+
+    # --- EXECUTION ---
+    - constraint: "Use the 'developer.text_editor' tool to write ALL files."
